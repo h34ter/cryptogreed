@@ -2,7 +2,6 @@
   "name": "crypto-risk-analyzer",
   "version": "1.0.0",
   "description": "Crypto risk analysis API for Render",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
