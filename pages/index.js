@@ -1,18 +1,25 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const analyzerModule = require('./api/analyze.js');
+import express from 'express';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+const { default: CryptoRiskAnalyzer } = require('./api/analyze.js');
+
+dotenv.config();
 
 const app = express();
-app.use(bodyParser.json());
+const port = process.env.PORT || 3000;
+const analyzer = new CryptoRiskAnalyzer();
 
-const analyzer = new analyzerModule();
+app.use(bodyParser.json());
 
 app.post('/analyze', async (req, res) => {
   const { coinId, contractAddress, chain, clientId } = req.body;
   const result = await analyzer.analyze(coinId, contractAddress, chain, clientId || 'default');
-  if (result.error) return res.status(400).json(result);
-  res.status(200).json(result);
+  res.status(result.error ? 400 : 200).json(result);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
