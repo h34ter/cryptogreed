@@ -4,8 +4,10 @@
   "type":"module",
   "description": "Advanced crypto risk analysis API",
   "scripts": {
-    "start": "node api/analyze.js"
-  },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start"
+},
   "dependencies": {
     "node-fetch": "^2.6.7"
   },
