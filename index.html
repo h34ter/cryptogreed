@@ -1,26 +1,79 @@
-<!-- public/index.html -->
+<!-- index.html  (replace the whole file) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Crypto Greed Index</title>
+  <meta charset="UTF-8" />
+  <title>Crypto Risk Analyzer</title>
+  <style>
+    body       { font-family: system-ui, sans-serif; margin: 2rem; }
+    label      { display:block; margin: .5rem 0; }
+    input,select,button { padding:.4rem .6rem; font-size:1rem; }
+    button     { cursor:pointer; }
+    #result    { white-space:pre-wrap; background:#f7f7f7;
+                 border:1px solid #ddd; padding:1rem; margin-top:1rem; }
+  </style>
 </head>
 <body>
-  <h1>Crypto Greed & Risk Index</h1>
-  <button onclick="fetchData()">Analyze Now</button>
-  <pre id="output"></pre>
+  <h1>Crypto Risk Analyzer</h1>
+
+  <!-- ── form inputs ─────────────────────────────── -->
+  <form id="analyzeForm">
+    <label>
+      CoinGecko coin-id (e.g. ethereum, solana)
+      <input id="coinId"  required />
+    </label>
+
+    <label>
+      Contract address (token) – Ethereum or Solana
+      <input id="contract" required style="width:34rem;" />
+    </label>
+
+    <label>
+      Chain
+      <select id="chain">
+        <option value="eth">Ethereum</option>
+        <option value="sol">Solana</option>
+      </select>
+    </label>
+
+    <button type="submit">Analyze</button>
+    <span id="status"></span>
+  </form>
+
+  <!-- ── output ──────────────────────────────────── -->
+  <pre id="result"></pre>
 
   <script>
-    async function fetchData() {
-      const res = await fetch('/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}) // if needed
-      });
+    const form   = document.getElementById('analyzeForm');
+    const status = document.getElementById('status');
+    const out    = document.getElementById('result');
 
-      const data = await res.json();
-      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-    }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      out.textContent = '';                  // clear previous
+      status.textContent = '⏳ fetching…';
+
+      const body = {
+        coinId:          document.getElementById('coinId').value.trim(),
+        contractAddress: document.getElementById('contract').value.trim(),
+        chain:           document.getElementById('chain').value
+      };
+
+      try {
+        const res  = await fetch('/api/analyze', {
+          method : 'POST',
+          headers: { 'Content-Type' : 'application/json' },
+          body   : JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        status.textContent = res.ok && !data.error ? '✅ done' : '❌ error';
+        out.textContent    = JSON.stringify(data, null, 2);
+      } catch (err) {
+        status.textContent = '❌ network error';
+        out.textContent    = err.toString();
+      }
+    });
   </script>
 </body>
 </html>
