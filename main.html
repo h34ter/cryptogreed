@@ -1,0 +1,26 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypto Greed Index</title>
+</head>
+<body>
+  <h1>Crypto Greed & Risk Index</h1>
+  <button onclick="fetchData()">Analyze Now</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function fetchData() {
+      const res = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}) // if needed
+      });
+
+      const data = await res.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
