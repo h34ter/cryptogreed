@@ -1,7 +1,7 @@
 {
   "name": "crypto-risk-analyzer",
   "version": "1.0.0",
-  "typr":"module",
+  "type":"module",
   "description": "Advanced crypto risk analysis API",
   "scripts": {
     "start": "node api/analyze.js"
