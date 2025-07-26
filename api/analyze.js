@@ -1,7 +1,9 @@
 // pages/api/analyze.js
 
-const crypto = require('crypto');
-const fetch = require('node-fetch');
+//const crypto = require('crypto');
+//const fetch = require('node-fetch');
+import crypto from 'crypto';
+import fetch from 'node-fetch';
 
 // ========= CLASS DEFINITION START =========
 
