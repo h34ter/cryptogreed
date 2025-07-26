@@ -1,79 +1,53 @@
-<!-- index.html  (replace the whole file) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Crypto Risk Analyzer</title>
   <style>
-    body       { font-family: system-ui, sans-serif; margin: 2rem; }
-    label      { display:block; margin: .5rem 0; }
-    input,select,button { padding:.4rem .6rem; font-size:1rem; }
-    button     { cursor:pointer; }
-    #result    { white-space:pre-wrap; background:#f7f7f7;
-                 border:1px solid #ddd; padding:1rem; margin-top:1rem; }
+    body { font-family: system-ui,sans-serif; margin:2rem; }
+    input,button { font-size:1rem; padding:.45rem .7rem; }
+    button { cursor:pointer; }
+    pre { margin-top:1.2rem; background:#f7f7f7; border:1px solid #ddd;
+          padding:1rem; white-space:pre-wrap; }
   </style>
 </head>
 <body>
   <h1>Crypto Risk Analyzer</h1>
 
-  <!-- ── form inputs ─────────────────────────────── -->
-  <form id="analyzeForm">
-    <label>
-      CoinGecko coin-id (e.g. ethereum, solana)
-      <input id="coinId"  required />
-    </label>
+  <input id="q" placeholder="Type a coin name — e.g. uniswap, pepe, solana" size="40">
+  <button id="go">Analyze</button>
+  <span id="status"></span>
 
-    <label>
-      Contract address (token) – Ethereum or Solana
-      <input id="contract" required style="width:34rem;" />
-    </label>
-
-    <label>
-      Chain
-      <select id="chain">
-        <option value="eth">Ethereum</option>
-        <option value="sol">Solana</option>
-      </select>
-    </label>
-
-    <button type="submit">Analyze</button>
-    <span id="status"></span>
-  </form>
-
-  <!-- ── output ──────────────────────────────────── -->
-  <pre id="result"></pre>
+  <pre id="out"></pre>
 
   <script>
-    const form   = document.getElementById('analyzeForm');
-    const status = document.getElementById('status');
-    const out    = document.getElementById('result');
+    const go = document.getElementById('go');
+    const q  = document.getElementById('q');
+    const s  = document.getElementById('status');
+    const o  = document.getElementById('out');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      out.textContent = '';                  // clear previous
-      status.textContent = '⏳ fetching…';
-
-      const body = {
-        coinId:          document.getElementById('coinId').value.trim(),
-        contractAddress: document.getElementById('contract').value.trim(),
-        chain:           document.getElementById('chain').value
-      };
+    go.onclick = async () => {
+      o.textContent = ''; s.textContent = '⏳';
+      const name = q.value.trim();
+      if (!name) return (s.textContent = 'Type something…');
 
       try {
         const res  = await fetch('/api/analyze', {
           method : 'POST',
-          headers: { 'Content-Type' : 'application/json' },
-          body   : JSON.stringify(body)
+          headers: { 'Content-Type':'application/json' },
+          body   : JSON.stringify({ coinName: name })   // only the name
         });
-
         const data = await res.json();
-        status.textContent = res.ok && !data.error ? '✅ done' : '❌ error';
-        out.textContent    = JSON.stringify(data, null, 2);
+        s.textContent = res.ok && !data.error ? '✅' : '❌';
+        o.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        status.textContent = '❌ network error';
-        out.textContent    = err.toString();
+        s.textContent = '❌';
+        o.textContent = err.toString();
       }
-    });
+    };
+
+    q.addEventListener('keyup', e => { if (e.key==='Enter') go.click(); });
   </script>
 </body>
 </html>
+
